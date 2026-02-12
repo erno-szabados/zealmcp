@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import os
 import plistlib
 import sqlite3
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 
 @dataclass(frozen=True)
@@ -18,7 +17,9 @@ class Docset:
 
 
 def _safe_docset_id(name: str) -> str:
-    normalized = "".join(ch if ch.isalnum() or ch in ("-", "_", ".") else "-" for ch in name.strip())
+    normalized = "".join(
+        ch if ch.isalnum() or ch in ("-", "_", ".") else "-" for ch in name.strip()
+    )
     normalized = "-".join(filter(None, normalized.split("-")))
     return normalized.lower() or "docset"
 
@@ -163,6 +164,9 @@ def search_docset(docset: Docset, query: str, limit: int) -> list[SearchResult]:
 def load_entry_html(docset: Docset, path: str) -> tuple[str, Path]:
     # Dash stores relative paths within Documents.
     rel = path.lstrip("/")
+    # Some docsets include anchors/query params in the index path.
+    # The on-disk file path is the part before '?' and '#'.
+    rel = rel.split("?", 1)[0].split("#", 1)[0]
     full = (docset.documents_path / rel).resolve()
 
     # Prevent escaping the Documents directory.

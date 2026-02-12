@@ -3,7 +3,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-from zealmcp.docsets import Docset, discover_docsets, search_docset
+from zealmcp.docsets import discover_docsets, load_entry_html, search_docset
 
 
 def _make_docset(tmp_path: Path, name: str) -> Path:
@@ -40,3 +40,12 @@ def test_search_docset(tmp_path: Path) -> None:
     results = search_docset(d, "Foo", limit=10)
     assert results
     assert results[0].title == "Foo"
+
+
+def test_load_entry_html_strips_anchor(tmp_path: Path) -> None:
+    _make_docset(tmp_path, "Test")
+    docsets = discover_docsets([str(tmp_path)])
+    d = docsets[0]
+    html, path = load_entry_html(d, "foo.html#section")
+    assert "<h1>Foo</h1>" in html
+    assert path.name == "foo.html"
