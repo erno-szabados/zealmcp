@@ -2,6 +2,8 @@
 
 An MCP (Model Context Protocol) stdio server that exposes Zeal/Dash docsets for agent grounding.
 
+See https://zealdocs.org/
+
 ## Requirements
 
 - Python 3.11+
